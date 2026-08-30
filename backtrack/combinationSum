@@ -1,0 +1,34 @@
+#define PART_N 38000 // number of different partitions of 40
+
+int* copy(int* tab, int len){
+    int* res = (int*)malloc(sizeof(int)*len);
+    for(int i = 0; i < len; i++){
+        res[i] = tab[i];
+    }
+    return res;
+}
+
+void comRec(int* candidates, int candidatesSize, int* curr, int poz, int target, int* returnColumnSizes, int** odp, int* counter, int curr_sum, int pozC){
+    if(pozC >= candidatesSize) return;
+    if(curr_sum > target) return;
+    if(curr_sum == target){
+        int* copyT = copy(curr, poz);
+        returnColumnSizes[*counter] = poz;
+        odp[(*counter)++] = copyT;
+        return;
+    }
+    curr[poz] = candidates[pozC];
+    comRec(candidates, candidatesSize, curr, poz+1, target, returnColumnSizes, odp, counter, curr_sum+candidates[pozC], pozC);
+    comRec(candidates, candidatesSize, curr, poz, target, returnColumnSizes, odp, counter, curr_sum, pozC+1);
+}
+
+int** combinationSum(int* candidates, int candidatesSize, int target, int* returnSize, int** returnColumnSizes) {
+    int counter = 0;
+    int** odp = (int**)malloc(sizeof(int*)*PART_N);
+    int max_mal = target/2+1;
+    int* curr = (int*)malloc(sizeof(int)*max_mal);
+    *returnColumnSizes = (int*)malloc(sizeof(int)*PART_N);
+    comRec(candidates, candidatesSize, curr, 0, target, *returnColumnSizes, odp, &counter, 0, 0);
+    *returnSize = counter;
+    return odp;
+}
